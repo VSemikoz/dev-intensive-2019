@@ -1,5 +1,7 @@
 package ru.skillbranch.devintensive.utils
 
+import android.annotation.SuppressLint
+
 object Utils {
 
     fun parseFullName(fullName:String?):Pair<String?, String?>{
@@ -21,7 +23,18 @@ object Utils {
         TODO("not implemented")
     }
 
+    @SuppressLint("DefaultLocale")
     fun toInitials(firstName: String?, lastName: String?): String? {
-        TODO("not implemented")
+        val firstChar = when(firstName){
+            "", null, " " -> ""
+            else -> firstName[0].toString()
+        }
+        val secondChar = when(lastName){
+            "", null, " " -> ""
+            else -> lastName[0].toString()
+        }
+        if (firstChar + secondChar == "")
+            return null
+        return (firstChar + secondChar).toUpperCase()
     }
 }

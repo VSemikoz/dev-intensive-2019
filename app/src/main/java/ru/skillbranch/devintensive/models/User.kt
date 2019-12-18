@@ -10,10 +10,9 @@ data class User(
     var avatar: String?,
     var rating: Int = 0,
     var respect: Int = 0,
-    val lastVisit: Date? = null,
+    val lastVisit: Date? = Date(),
     val isOnline: Boolean = false
 ) {
-    var introBit: String
 
     constructor(id: String, firstName: String?, lastName: String?) : this(
         id = id,
@@ -25,19 +24,11 @@ data class User(
     constructor(id: String) : this(id, "john", "Doe")
 
     init {
-        introBit = getIntro()
         println(
-            "Is's Alive!!! \n${if (lastName === "Doe")
-                "His name is $firstName $lastName"
-            else "And His name is $firstName $lastName"}\n"
+            "Is's Alive!!! \n" +
+            "His name is $firstName $lastName"
         )
     }
-
-    private fun getIntro() = """
-        tu tu ru tuuuu
-        tu tu ru tuuuu ....
-        
-    """.trimIndent()
 
     fun printMe() = println(
         """

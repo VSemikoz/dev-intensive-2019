@@ -66,9 +66,15 @@ fun Date.humanizeDiff(date: Date = Date()): String {
 }
 
 fun TimeUnits.plural(countOfUnits: Int): String {
-    val n = Math.abs(countOfUnits) % 100
+    val absCountOfUnits: Int = if (countOfUnits < 0) {
+        countOfUnits * (-1)
+    }else{
+        countOfUnits
+    }
+
+    val n = absCountOfUnits % 100
     val n1 = n % 10
-    return "$countOfUnits " + when (this) {
+    return "$absCountOfUnits " + when (this) {
         TimeUnits.SECOND -> when {
             n in 11..19 -> "секунд"
             n1 in 2..4 -> "секунды"

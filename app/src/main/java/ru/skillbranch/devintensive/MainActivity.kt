@@ -13,6 +13,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.skillbranch.devintensive.extensions.hideKeyboard
+import ru.skillbranch.devintensive.extensions.isKeyboardOpen
 import ru.skillbranch.devintensive.models.Bender
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
@@ -46,12 +47,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         et_message.setOnEditorActionListener{v, actionId, event ->
             Log.d("M_setOnEditorAction","$actionId")
             if(et_message.imeOptions == EditorInfo.IME_ACTION_DONE){
-                val (phrase, color) = benderObj.listenAnswer(messageEt.text.toString().toLowerCase())
-                messageEt.setText("")
-                val (r,g,b) = color
-                benderImage.setColorFilter(Color.rgb(r,g,b), PorterDuff.Mode.MULTIPLY)
-                textTxt.text = phrase
-
+                updateView()
                 hideKeyboard()
                 true
             } else {
@@ -91,16 +87,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         Log.d("M_MainActivity","onDestroy  ${benderObj.status.name} ${benderObj.question.name}")
     }
 
-    @SuppressLint("DefaultLocale")
     override fun onClick(v: View?) {
 
-        if (v?.id == R.id.iv_send){
-            val (phrase, color) = benderObj.listenAnswer(messageEt.text.toString().toLowerCase())
-            messageEt.setText("")
-            val (r,g,b) = color
-            benderImage.setColorFilter(Color.rgb(r,g,b), PorterDuff.Mode.MULTIPLY)
-            textTxt.text = phrase
-
+        if (v?.id == R.id.iv_send) {
+            updateView()
         }
     }
 
@@ -109,6 +99,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         outState.putString("STATUS", benderObj.status.name)
         outState.putString("QUESTION", benderObj.question.name)
         Log.d("M_MainActivity","onSaveInstanceState ${benderObj.status.name} ${benderObj.question.name}")
+    }
+
+    @SuppressLint("DefaultLocale")
+    private fun updateView(){
+            val (phrase, color) = benderObj.listenAnswer(messageEt.text.toString().toLowerCase())
+            messageEt.setText("")
+            val (r, g, b) = color
+            benderImage.setColorFilter(Color.rgb(r, g, b), PorterDuff.Mode.MULTIPLY)
+            textTxt.text = phrase
     }
 
 }

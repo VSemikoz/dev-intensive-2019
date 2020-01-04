@@ -1,5 +1,7 @@
 package ru.skillbranch.devintensive.models
 
+import android.util.Log
+
 class Bender(var status:Status = Status.NORMAL, var question:Question = Question.NAME) {
     var countOfErrors = 0
 
@@ -14,14 +16,18 @@ class Bender(var status:Status = Status.NORMAL, var question:Question = Question
 
     fun listenAnswer(answer:String): Pair<String, Triple<Int, Int, Int>>{
         return if (question.answer.contains(answer)){
+            Log.d("M_TrueListenBender","$countOfErrors, $answer, ${question.answer}")
             question = question.nextQuestion()
             "Отлично - ты справился\n${question.question}" to status.color
         } else{
+            Log.d("M_FalseListenBender","$countOfErrors, $answer, ${question.answer}")
+
             countOfErrors += 1
             status = status.nextStatus()
             if (countOfErrors > 3){
                 status = Status.NORMAL
                 question = Question.NAME
+                countOfErrors = 0
                 "Это неправильный ответ. Давай все по новой\n${question.question}" to status.color
             }else{
                 "Это неправильный ответ\n${question.question}" to status.color
@@ -50,7 +56,7 @@ class Bender(var status:Status = Status.NORMAL, var question:Question = Question
         NAME("Как меня зовут?", listOf("бендер", "bender")) {
             override fun nextQuestion(): Question = PROFESSION
         },
-        PROFESSION("Назови мою професcию?", listOf("сгибальщик","bender")){
+        PROFESSION("Назови мою професcию?", listOf("сгибальщик", "bender")){
             override fun nextQuestion(): Question = MATERIAL
         },
         MATERIAL("Из чего я сделан?", listOf("метал","iron")){

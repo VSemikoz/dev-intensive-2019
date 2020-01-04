@@ -44,8 +44,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         textTxt.text = benderObj.askQuestion()
         sendBtn.setOnClickListener(this)
 
+        actionDone()
+
+    }
+
+    private fun actionDone(){
         et_message.setOnEditorActionListener{v, actionId, event ->
-            Log.d("M_setOnEditorAction","$actionId")
             if(et_message.imeOptions == EditorInfo.IME_ACTION_DONE){
                 updateView()
                 hideKeyboard()
@@ -56,7 +60,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         }
     }
-
     override fun onRestart() {
         super.onRestart()
         Log.d("M_MainActivity","onRestart ${benderObj.status.name} ${benderObj.question.name}")

@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         textTxt.text = benderObj.askQuestion()
         sendBtn.setOnClickListener(this)
 
-        //actionDone()
+//        actionDone()
 
     }
 
@@ -54,7 +54,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 Log.d("M_actionDone","$v")
 
                 updateView()
-                hideKeyboard()
                 true
             } else {
                 false
@@ -114,6 +113,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             val (r, g, b) = color
             benderImage.setColorFilter(Color.rgb(r, g, b), PorterDuff.Mode.MULTIPLY)
             textTxt.text = phrase
+            hideKeyboard()
     }
 
 }

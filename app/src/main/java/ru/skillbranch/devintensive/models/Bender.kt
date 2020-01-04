@@ -3,7 +3,7 @@ package ru.skillbranch.devintensive.models
 import android.util.Log
 
 class Bender(var status:Status = Status.NORMAL, var question:Question = Question.NAME) {
-    var answerCount = 0
+    var countOfErrors = 0
 
     fun askQuestion(): String = when(question){
         Question.NAME -> Question.NAME.question
@@ -14,58 +14,27 @@ class Bender(var status:Status = Status.NORMAL, var question:Question = Question
         Question.IDLE -> Question.IDLE.question
     }
 
-//    fun listenAnswer(answer:String): Pair<String, Triple<Int, Int, Int>>{
-//        return if (question.answer.contains(answer)){
-//            Log.d("M_TrueListenBender","$countOfErrors, $answer, ${question.answer}")
-//            question = question.nextQuestion()
-//            "Отлично - ты справился\n${question.question}" to status.color
-//        } else{
-//            Log.d("M_FalseListenBender","$countOfErrors, $answer, ${question.answer}")
-//
-//            countOfErrors += 1
-//            status = status.nextStatus()
-//            if (countOfErrors > 3){
-//                status = Status.NORMAL
-//                question = Question.NAME
-//                countOfErrors = 0
-//                "Это неправильный ответ. Давай все по новой\n${question.question}" to status.color
-//            }else{
-//                "Это неправильный ответ\n${question.question}" to status.color
-//            }
-//
-//        }
-//    }
+    fun listenAnswer(answer:String): Pair<String, Triple<Int, Int, Int>>{
+        return if (question.answer.contains(answer)){
+            Log.d("M_TrueListenBender","$countOfErrors, $answer, ${question.answer}")
+            question = question.nextQuestion()
+            "Отлично - ты справился\n${question.question}" to status.color
+        } else{
+            Log.d("M_FalseListenBender","$countOfErrors, $answer, ${question.answer}")
 
-    fun listenAnswer(answer: String): Pair<String, Triple<Int, Int, Int>> {
-        return when(question) {
-            Question.IDLE -> question.question to status.color
-            else -> {
-                val (answerResult, answerString) = question.validate(answer)
-                if (answerResult) {
-                    if (question.answers.contains(answerString)) {
-                        question = question.nextQuestion()
-                        "Отлично - ты справился\n${question.question}" to status.color
-                    } else {
-                        answerCount++
-                        if (answerCount > 3) {
-                            answerCount = 0
-                            status = Status.NORMAL
-                            question = Question.NAME
-                            "Это неправильный ответ. Давай все по новой\n${question.question}" to status.color
-                        } else {
-                            status = status.nextStatus()
-                            "Это неправильный ответ\n${question.question}" to status.color
-                        }
-                    }
-                } else {
-                    "$answerString\n${question.question}" to status.color
-                }
+            countOfErrors += 1
+            status = status.nextStatus()
+            if (countOfErrors > 3){
+                status = Status.NORMAL
+                question = Question.NAME
+                countOfErrors = 0
+                "Это неправильный ответ. Давай все по новой\n${question.question}" to status.color
+            }else{
+                "Это неправильный ответ\n${question.question}" to status.color
             }
+
         }
     }
-
-
-
 
     enum class Status(val color : Triple<Int, Int, Int>){
         NORMAL(Triple(255, 255, 255)) ,
@@ -82,95 +51,27 @@ class Bender(var status:Status = Status.NORMAL, var question:Question = Question
         }
     }
 
+    enum class Question(val question:String, val answer: List<String>){
 
-//    enum class Question(val question:String, val answer: List<String>){
-//
-//        NAME("Как меня зовут?", listOf("бендер", "bender")) {
-//            override fun nextQuestion(): Question = PROFESSION
-//        },
-//        PROFESSION("Назови мою професcию?", listOf("сгибальщик", "bender")){
-//            override fun nextQuestion(): Question = MATERIAL
-//        },
-//        MATERIAL("Из чего я сделан?", listOf("метал","iron")){
-//            override fun nextQuestion(): Question = BDAY
-//        },
-//        BDAY("Когда меня создали?", listOf("2993")){
-//            override fun nextQuestion(): Question = SERIAL
-//        },
-//        SERIAL("Мой серийный номер?", listOf("2716057")){
-//            override fun nextQuestion(): Question = IDLE
-//        },
-//        IDLE("На этом все, вопросов больше нет", listOf()) {
-//            override fun nextQuestion(): Question = IDLE
-//        };
-//
-//        abstract fun nextQuestion():Question
-//    }
-
-
-    enum class Question(val question: String, val answers: List<String>) {
         NAME("Как меня зовут?", listOf("бендер", "bender")) {
             override fun nextQuestion(): Question = PROFESSION
-            override fun validate(text: String): Pair<Boolean, String> {
-                return if (text.isNotEmpty() && text[0].isUpperCase()) {
-                    true to text.toLowerCase()
-                } else {
-                    false to "Имя должно начинаться с заглавной буквы"
-                }
-            }
         },
-        PROFESSION("Назови мою профессию?", listOf("сгибальщик", "bender")) {
+        PROFESSION("Назови мою професcию?", listOf("сгибальщик", "bender")){
             override fun nextQuestion(): Question = MATERIAL
-            override fun validate(text: String): Pair<Boolean, String> {
-                return if (text.isNotEmpty() && text[0].isLowerCase()) {
-                    true to text.toLowerCase()
-                } else {
-                    false to "Профессия должна начинаться со строчной буквы"
-                }
-            }
         },
-        MATERIAL("Из чего я сделан?", listOf("металл", "дерево", "metal", "iron", "wood")) {
+        MATERIAL("Из чего я сделан?", listOf("метал","iron")){
             override fun nextQuestion(): Question = BDAY
-            override fun validate(text: String): Pair<Boolean, String> {
-                val reg = Regex("\\d+")
-                return if (reg.findAll(text).none()) {
-                    true to text.toLowerCase()
-                } else {
-                    false to "Материал не должен содержать цифр"
-                }
-            }
         },
-        BDAY("Когда меня создали?", listOf("2993")) {
+        BDAY("Когда меня создали?", listOf("2993")){
             override fun nextQuestion(): Question = SERIAL
-            override fun validate(text: String): Pair<Boolean, String> {
-                val reg = Regex("\\D+")
-                return if (reg.findAll(text).none()) {
-                    true to text.toLowerCase()
-                } else {
-                    false to "Год моего рождения должен содержать только цифры"
-                }
-            }
         },
-        SERIAL("Мой серийный номер?", listOf("2716057"))  {
+        SERIAL("Мой серийный номер?", listOf("2716057")){
             override fun nextQuestion(): Question = IDLE
-            override fun validate(text: String): Pair<Boolean, String> {
-                val reg = Regex("\\D+")
-                return if (reg.findAll(text).none() && text.length == 7) {
-                    true to text.toLowerCase()
-                } else {
-                    false to "Серийный номер содержит только цифры, и их 7"
-                }
-            }
         },
-        IDLE("На этом все, вопросов больше нет", listOf())  {
+        IDLE("На этом все, вопросов больше нет", listOf()) {
             override fun nextQuestion(): Question = IDLE
-            override fun validate(text: String): Pair<Boolean, String> {
-                return true to text
-            }
         };
 
-        abstract fun nextQuestion(): Question
-        abstract fun validate(text: String): Pair<Boolean, String>
+        abstract fun nextQuestion():Question
     }
-
 }

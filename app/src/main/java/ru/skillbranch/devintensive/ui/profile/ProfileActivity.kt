@@ -35,7 +35,7 @@ class ProfileActivity : AppCompatActivity() {
 
     @SuppressLint("DefaultLocale")
      override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.AppTheme)
+        setTheme(R.style.AppTheme_SplahTheme)
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_profile)

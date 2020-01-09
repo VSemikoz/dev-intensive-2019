@@ -28,23 +28,30 @@ object Utils {
     }
 
     @SuppressLint("DefaultLocale")
-    fun transliteration(payload: String, divedier: String = " "): String {
+    fun transliteration(payload: String, divider: String = " "): String {
         var resultString = ""
-
         for (symbol in payload) {
             val searchSymbol = symbol.toString().toLowerCase()
-            resultString += when (searchSymbol) {
-                in TRANSLITERATION_DICT.keys -> if (symbol.isUpperCase())
-                    TRANSLITERATION_DICT[searchSymbol]?.toUpperCase()
-                else TRANSLITERATION_DICT[searchSymbol]
-                " " -> divedier
-                else -> symbol
+
+            if (searchSymbol in TRANSLITERATION_DICT.keys) {
+                resultString += if (symbol.isUpperCase()) {
+
+                    val firstLetter = TRANSLITERATION_DICT[searchSymbol]?.get(0)?.toUpperCase()
+                    firstLetter?.plus(
+                        TRANSLITERATION_DICT[searchSymbol]?.substring(1).toString())
+                } else {
+                    TRANSLITERATION_DICT[searchSymbol]
+                }
+            } else {
+                if (symbol == ' ') resultString += symbol
+                else resultString += divider
             }
+
         }
         return resultString
     }
 
-    @SuppressLint("DefaultLocale")
+        @SuppressLint("DefaultLocale")
     fun toInitials(firstName: String?, lastName: String?): String? {
         val firstChar = when (firstName) {
             "", null, " " -> ""

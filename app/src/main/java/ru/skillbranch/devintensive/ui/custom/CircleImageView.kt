@@ -1,9 +1,12 @@
 package ru.skillbranch.devintensive.ui.custom
 
 import android.content.Context
+import android.graphics.*
+import android.graphics.drawable.BitmapDrawable
 import android.util.AttributeSet
 import android.widget.ImageView
 import ru.skillbranch.devintensive.R
+
 
 class CircleImageView @JvmOverloads constructor(
     context: Context,
@@ -14,6 +17,8 @@ class CircleImageView @JvmOverloads constructor(
     companion object{
         private const val DEFAULT_COLOR = R.color.color_white
         private const val DEFAULT_BORDER = 2f
+
+
     }
     private var aspectColor = DEFAULT_COLOR
     private var aspectBorder = DEFAULT_BORDER
@@ -21,6 +26,7 @@ class CircleImageView @JvmOverloads constructor(
 
     init {
         if(attrs!=null){
+
             val a = context.obtainStyledAttributes(attrs, R.styleable.CircleImageView)
             aspectColor = a.getColor(R.styleable.CircleImageView_cv_borderColor, DEFAULT_COLOR)
 
@@ -33,8 +39,8 @@ class CircleImageView @JvmOverloads constructor(
     }
 
     fun setBorderColor(){
-        val avatarViewId = resources.getIdentifier("iv_avatar", "id", null)
-        val avatarView = findViewById<CircleImageView>(avatarViewId)
+        val avatarView = findViewById<CircleImageView>(R.id.iv_avatar)
+        //return avatarView.
     }
 
     fun setBorderWidth(){

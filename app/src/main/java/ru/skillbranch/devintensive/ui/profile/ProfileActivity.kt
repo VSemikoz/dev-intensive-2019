@@ -4,12 +4,15 @@ import android.annotation.SuppressLint
 import android.graphics.ColorFilter
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
+import android.util.Patterns
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_profile.*
@@ -21,21 +24,63 @@ import ru.skillbranch.devintensive.viewmodels.ProfileViewModel
 class ProfileActivity : AppCompatActivity() {
     companion object{
         const val IS_EDIT_MODE = "IS_EDIT_MODE"
+        val exclude_path = setOf("enterprise", "features", "topics", "collections",
+            "trending", "events", "marketplace", "pricing", "nonprofit", "customer-stories",
+            "security", "login", "join"
+        )
     }
-
     private lateinit var viewModel: ProfileViewModel
     var isEditMode = false
     lateinit var viewFields : Map<String, TextView>
 
     @SuppressLint("DefaultLocale")
-    //TODO set custum theme this before super and setConentView
      override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_profile)
         initViews(savedInstanceState)
         initNewModel()
+
+
         Log.d("M_ProfileActivity","onCreate")
 
+        et_repository.addTextChangedListener(object : TextWatcher {
+
+            override fun afterTextChanged(s: Editable) {}
+
+            override fun beforeTextChanged(s: CharSequence, start: Int,
+                                           count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence, start: Int,
+                                       before: Int, count: Int) {
+                repositoryValidation()
+            }
+        })
+
+    }
+
+    private fun repositoryValidation() {
+        val repositoryText = et_repository.text.toString()
+
+        if (repositoryText.trim().isEmpty()) {
+            wr_repository.isErrorEnabled = false
+        } else {
+            val isValid = Patterns.WEB_URL.matcher(repositoryText).matches()
+            val wordsInUrl = repositoryText.split("/")
+            if (!isValid) {
+                wr_repository.error = "Невалидный адрес репозитория"
+                return
+            } else {
+                for (word in wordsInUrl){
+                    if (word in exclude_path) wr_repository.error = "Невалидный адрес репозитория"
+                    else wr_repository.isErrorEnabled = false
+                }
+
+            }
+        }
+        return
     }
 
     private fun initViews(savedInstanceState: Bundle?) {
@@ -45,7 +90,7 @@ class ProfileActivity : AppCompatActivity() {
             "firstName" to et_first_name,
             "lastName" to et_last_name,
             "about" to et_about,
-            "repository" to et_about,
+            "repository" to et_repository,
             "rating" to tv_rating,
             "respect" to tv_respect
         )
@@ -54,7 +99,10 @@ class ProfileActivity : AppCompatActivity() {
         showCurrentMode(isEditMode)
 
         btn_edit.setOnClickListener {
-            if(isEditMode) saveProfileInfo()
+            if(isEditMode) {
+                if (wr_repository.error != "") et_repository.text.delete(0, et_repository.text.length)
+                saveProfileInfo()
+            }
             isEditMode = !isEditMode
             showCurrentMode(isEditMode)
         }
@@ -132,4 +180,6 @@ class ProfileActivity : AppCompatActivity() {
             viewModel.saveProfileData(this)
         }
     }
+
 }
+

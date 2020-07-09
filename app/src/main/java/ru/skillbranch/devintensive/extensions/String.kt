@@ -14,7 +14,7 @@ fun String.stripHtml(): String{
     var subString = this.substring(index1 + 1, index2)
 
     while(subString.contains("  ")) {
-        var replace = subString.replace("  ", " ")
+        val replace = subString.replace("  ", " ")
         subString = replace
     }
     return subString
